@@ -19,30 +19,20 @@ export default function App() {
     async function getDados(){
 
     const usersRef = collection(db, "users");
-
-    getDocs(usersRef)
-    .then((snapshot) => {
-      let lista = [];
-
-      snapshot.forEach((doc) => {
-        lista.push({
-          id: doc.id,
-          nome: doc.data().nome,
-          idade: doc.data().idade,
-          cargo: doc.data().cargo
+      onSnapshot(usersRef, (snapshot) => {
+        let lista = []
+        snapshot.forEach((doc)=>{
+          lista.push({
+            id: doc.id,
+            nome: doc.data().nome,
+            idade: doc.data().idade,
+            cargo: doc.data().cargo
+          })
         })
+        setUsers(lista)
       })
 
-      setUsers(lista);
-
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-
     }
-
-
     getDados();
 
   }, [])
