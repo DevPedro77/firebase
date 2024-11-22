@@ -1,52 +1,97 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import FormsUser from './src/formsUser';
-import {createUserWithEmailAndPassword} from 'firebase/auth'
-import { auth } from './src/firebaseConnection';
+import { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { auth } from './src/firebaseConnection'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 
-export default function LoginScreen() {
+export default function App() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
-  async function createUser() {
-    const user = await createUserWithEmailAndPassword(auth, 'pedro@gmail.com', '12345678')
-    console.log(user)
+  const [authUser, setAuthUser] = useState(null);
+
+  async function handleCreateUser(){
+   const user = await createUserWithEmailAndPassword(auth, email, password)
+   console.log(user);
   }
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
 
+  function handleLogin(){
+    signInWithEmailAndPassword(auth, email, password)
+    .then((user) => {
+      console.log(user);
+      setAuthUser({
+        email: user.user.email,
+        uid: user.user.uid
+      })
+    })
+    .catch(err => {
+      if(err.code === "auth/missing-password"){
+        console.log("A senha é obrigatória")
+        return;
+      }
+
+      console.log(err.code);
+    })
+  }
+
+ return (
+  <View style={styles.container}>
+
+    <Text style={styles.loggedInText}>Usuario logado: {authUser && authUser.email}</Text>
+
+    <View style={styles.inputContainer}>
+      <Text style={styles.label}>Email:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#aaa"
+        placeholder="Digite seu email..."
+        value={email}
+        onChangeText={(text) => setEmail(text)}
       />
 
+      <Text style={styles.label}>Senha:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#aaa"
-        secureTextEntry
+        placeholder="Digite sua senha..."
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+        secureTextEntry={true}
       />
-
-      <TouchableOpacity style={styles.button} onPress={createUser}>
-        <Text style={styles.buttonText}>Criar conta</Text>
-      </TouchableOpacity>
     </View>
-  );
+
+    <TouchableOpacity style={[styles.button, styles.loginButton]} onPress={handleLogin}>
+      <Text style={styles.buttonText}>Fazer login</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity style={[styles.button, styles.createAccountButton]} onPress={handleCreateUser}>
+      <Text style={styles.buttonText}>Criar uma conta</Text>
+    </TouchableOpacity>
+
+  </View>
+ );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1, 
+    paddingTop: 40,
     backgroundColor: '#f5f5f5',
-    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  loggedInText: {
+    fontSize: 16,
     color: '#333',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 18,
+    color: '#000',
+    marginBottom: 8,
   },
   input: {
     width: '100%',
@@ -54,25 +99,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 8,
     paddingHorizontal: 15,
-    marginBottom: 15,
     fontSize: 16,
     color: '#333',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    marginBottom: 14,
   },
   button: {
     width: '100%',
     height: 50,
-    backgroundColor: '#6200ea',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#6200ea',
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 5,
+    marginBottom: 12,
+  },
+  loginButton: {
+    backgroundColor: '#6200ea',
+  },
+  createAccountButton: {
+    backgroundColor: '#03dac5',
   },
   buttonText: {
     color: '#fff',
