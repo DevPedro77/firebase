@@ -10,8 +10,8 @@ export default function App() {
   const [authUser, setAuthUser] = useState(null);
 
   async function handleCreateUser(){
-   const user = await createUserWithEmailAndPassword(auth, email, password)
-   console.log(user);
+    const user = await createUserWithEmailAndPassword(auth, email, password)
+    console.log(user);
   }
 
   function handleLogin(){
@@ -33,7 +33,7 @@ export default function App() {
     })
   }
 
- return (
+return (
   <View style={styles.container}>
 
     <Text style={styles.loggedInText}>Usuario logado: {authUser && authUser.email}</Text>
@@ -66,7 +66,7 @@ export default function App() {
     </TouchableOpacity>
 
   </View>
- );
+);
 }
 
 const styles = StyleSheet.create({
@@ -114,10 +114,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   loginButton: {
-    backgroundColor: '#6200ea',
+    backgroundColor: '#44bd32',
   },
   createAccountButton: {
-    backgroundColor: '#03dac5',
+    backgroundColor: '#000',
   },
   buttonText: {
     color: '#fff',
